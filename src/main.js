@@ -4,7 +4,9 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueShowdown from 'vue-showdown'
 import GithubMarkdownCss from 'github-markdown-css'
+import VueClipboard  from 'vue-clipboard2'
 
+Vue.use(VueClipboard)
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueShowdown, {
@@ -19,4 +21,5 @@ Vue.use(GithubMarkdownCss)
 new Vue({
   render: h => h(App),
 }).$mount('#app')
+
 
