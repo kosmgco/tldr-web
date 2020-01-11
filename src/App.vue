@@ -87,7 +87,10 @@
                 |
                 <el-link href="//element.eleme.cn" target="_blank"><i class="el-icon-link"></i>ElementUI</el-link>
                 <br/>
-                &copy; 2020 - <i class="el-icon-user"></i> ooops
+                <label>&copy; 2020 - </label>
+                <el-link href="https://github.com/kosmgco" target="_blank"><i class="el-icon-user"></i> ooops</el-link>
+                <br/>
+                <el-link href="http://www.beian.miit.gov.cn">渝ICP备16003403号</el-link>
             </el-footer>
         </el-container>
     </div>
@@ -165,10 +168,12 @@
       },
       handleSelect(item) {
         let that = this;
-        service.get('/tldr/get?name=' + item.value + '&platform=' + item.platform + '&language=' + item.language).then(function (resp) {
-          that.markdownSource = Base64.Base64.decode(resp.data.content);
-        });
-        window.location.href = window.location.protocol + '//' + window.location.host + '#' + (item.platform === "" ? "" : item.platform + ".") + (item.language === "" ? "" : item.language + ".") + item.value
+          service.get('/tldr/get?name=' + item.value + '&platform=' + item.platform + '&language=' + item.language).then(function (resp) {
+            that.markdownSource = Base64.Base64.decode(resp.data.content);
+          });
+          // window.location.pathname = (item.platform === "" ? "" : item.platform + "/") + (item.language === "" ? "" : item.language + "/") + item.value
+        window.history.pushState({}, 0, '?' + (item.platform === "" ? "" : item.platform + "/") + (item.language === "" ? "" : item.language + "/") + item.value)
+        document.title = 'tldr | Simplified and community-driven man pages | ' + item.value;
       },
       onPlatformChange(args) {
         this.getConf(args, '');
@@ -225,15 +230,16 @@
         })
       },
       init() {
-        this.getConf('', '');
-        this.getHot();
         this.platform = localStorage.getItem('TLDR_PLATFORM') ? localStorage.getItem('TLDR_PLATFORM') : '';
         this.language = localStorage.getItem('TLDR_LANGUAGE') ? localStorage.getItem('TLDR_LANGUAGE') : '';
-        let hashes = window.location.hash.replace('#', '').split('.');
-        if (hashes.length > 2) {
-          this.state = hashes[2];
-          this.platform = hashes[0];
-          this.language = hashes[1];
+        this.getConf(this.platform, this.language);
+        this.getHot();
+
+        let path = window.location.search.replace('?', '').split('/');
+        if (path.length > 2) {
+          this.state = path[2];
+          this.platform = path[0];
+          this.language = path[1];
           this.handleSelect({
             value: this.state,
             platform: this.platform,
